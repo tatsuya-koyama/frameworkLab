@@ -22,10 +22,23 @@ package {
             textField.x        = 180;
             textField.y        = 580;
             textField.fontSize = 30;
-            textField.color    = 0x888888;
+            textField.color    = 0xaaaaaa;
             textField.hAlign   = HAlign.LEFT;
             textField.vAlign   = VAlign.TOP;
             addChild(textField);
+
+            var gudeText:TextField = new TextField(
+                700, 100,
+                "Mouse Drag: Move camera direction \n"
+                    + "WASD or Arrow: Move view point"
+            );
+            gudeText.x        = 180;
+            gudeText.y        = 540;
+            gudeText.fontSize = 16;
+            gudeText.color    = 0xaaaaaa;
+            gudeText.hAlign   = HAlign.LEFT;
+            gudeText.vAlign   = VAlign.TOP;
+            addChild(gudeText);
         }
 
         private function _addImage():void {

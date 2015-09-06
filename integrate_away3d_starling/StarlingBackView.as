@@ -22,10 +22,19 @@ package {
             textField.x        = 420;
             textField.y        = 100;
             textField.fontSize = 25;
-            textField.color    = 0x666666;
+            textField.color    = 0x888888;
             textField.hAlign   = HAlign.LEFT;
             textField.vAlign   = VAlign.TOP;
             addChild(textField);
+
+            var gudeText:TextField = new TextField(700, 100, "(Rendered behind Away3D layer)");
+            gudeText.x        = 420;
+            gudeText.y        = 80;
+            gudeText.fontSize = 16;
+            gudeText.color    = 0x888888;
+            gudeText.hAlign   = HAlign.LEFT;
+            gudeText.vAlign   = VAlign.TOP;
+            addChild(gudeText);
         }
 
         private function _addImage():void {

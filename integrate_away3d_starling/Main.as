@@ -23,8 +23,10 @@ package {
     import away3d.debug.AwayStats;
     import away3d.entities.Mesh;
     import away3d.events.Stage3DEvent;
+    import away3d.lights.DirectionalLight;
     import away3d.materials.ColorMaterial;
     import away3d.materials.TextureMaterial;
+    import away3d.materials.lightpickers.StaticLightPicker;
     import away3d.primitives.CubeGeometry;
     import away3d.primitives.PlaneGeometry;
     import away3d.tools.helpers.ParticleGeometryHelper;
@@ -46,7 +48,8 @@ package {
         private var _view3D:View3D;
         private var _starlingFront:Starling;
         private var _starlingBack:Starling;
-        private var _plane:Mesh;
+        private var _light:DirectionalLight;
+        private var _lightPicker:StaticLightPicker;
         private var _cameraController:CameraController;
 
         public function Main() {
@@ -65,16 +68,13 @@ package {
             _stage3DProxy.color     = 0x222222;
         }
 
-        private function _initCamera(view:View3D):void {
-            view.camera.z = -500;
-            view.camera.y = 500;
-            view.camera.lookAt(new Vector3D());
-        }
-
         private function _onContextCreated(event:Stage3DEvent):void {
             _view3D = _initAway3DView(_stage3DProxy);
+            _light  = _initLight(_view3D);
+            _lightPicker = new StaticLightPicker([_light]);
             _initCamera(_view3D);
             _cameraController = new CameraController(stage, _view3D.camera);
+            _initCubes(_view3D, _lightPicker);
             _initParticle(_view3D);
 
             _initStarling(_stage3DProxy);
@@ -95,6 +95,29 @@ package {
             return view3D;
         }
 
+        private function _initCamera(view:View3D):void {
+            view.camera.x = 0;
+            view.camera.y = 500;
+            view.camera.z = -500;
+            view.camera.lookAt(new Vector3D());
+
+            view.camera.lens.near = 20;
+            view.camera.lens.far  = 5000;
+        }
+
+        private function _initLight(view:View3D):DirectionalLight {
+            var light:DirectionalLight = new DirectionalLight();
+            light.x = 0;
+            light.y = 500;
+            light.z = 1000;
+            light.lookAt(new Vector3D(0, 0, 0));
+            light.color    = 0xff8811;
+            light.ambient  = 0.2;
+            light.diffuse  = 0.6;
+            light.specular = 0.8;
+            return light;
+        }
+
         private function _initStarling(stage3DProxy:Stage3DProxy):void {
             _starlingFront = new Starling(
                 StarlingFrontView, stage,
@@ -111,10 +134,20 @@ package {
             _starlingBack.showStatsAt(HAlign.RIGHT, VAlign.BOTTOM);
         }
 
+        private function _initCubes(view3D:View3D, lightPicker:StaticLightPicker):void {
+            var rand:KrewRandom = new KrewRandom(12345003);
+            for (var i:int = 0; i < 120; ++i) {
+                var cube:MyCube = new MyCube(view3D, lightPicker, rand);
+            }
+        }
+
         private function _initParticle(view3D:View3D):void {
             var particleGeometry:ParticleGeometry = _makeParticleGeometry();
             var particleMaterial:TextureMaterial  = _makeParticleMaterial();
             var particleMesh:Mesh = new Mesh(particleGeometry, particleMaterial);
+
+            // To avoid culling
+            particleMesh.bounds.fromSphere(new Vector3D(), 20000);
 
             var particleAnimator:ParticleAnimator = _makeParticleAnimator();
             particleMesh.animator = particleAnimator;
@@ -124,7 +157,6 @@ package {
         }
 
         private function _makeParticleGeometry():ParticleGeometry {
-            // var cube:Geometry = new CubeGeometry(100, 100, 100);
             var plane:Geometry = new PlaneGeometry(20, 20, 1, 1, false);
             var geometrySet:Vector.<Geometry> = new Vector.<Geometry>;
             for (var i:int = 0; i < 10000; ++i) {
@@ -159,7 +191,7 @@ package {
             var i:int = prop.index;
             prop.startTime = i * (5 / 10000);
             prop.duration  = 5;
-            prop.delay     = 2;
+            prop.delay     = 4;
 
             var degree1:Number;
             var degree2:Number;
