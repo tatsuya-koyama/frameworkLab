@@ -6,6 +6,7 @@ package {
     import flash.display.StageScaleMode;
     import flash.events.Event;
     import flash.geom.ColorTransform;
+    import flash.geom.Rectangle;
     import flash.geom.Vector3D;
 
     import away3d.animators.ParticleAnimationSet;
@@ -42,6 +43,9 @@ package {
 
         [Embed(source="./dust.png")]
         public static var DustImg:Class;
+
+        private const STARLING_COORDINATE_WIDTH :Number = 960;
+        private const STARLING_COORDINATE_HEIGHT:Number = 640;
 
         private var _stage3DManager:Stage3DManager;
         private var _stage3DProxy:Stage3DProxy;
@@ -80,6 +84,46 @@ package {
             _initStarling(_stage3DProxy);
 
             _stage3DProxy.addEventListener(Event.ENTER_FRAME, _onEnterFrame);
+            stage.addEventListener(Event.RESIZE, _onStageResize);
+            _onStageResize();
+        }
+
+        private function _onStageResize(event:Event=null):void {
+            var viewPort:Rectangle = _getBestFitViewPort();
+
+            _view3D.x            = viewPort.x;
+            _view3D.y            = viewPort.y;
+            _view3D.width        = viewPort.width;
+            _view3D.height       = viewPort.height;
+
+            _stage3DProxy.x      = viewPort.x;
+            _stage3DProxy.y      = viewPort.y;
+            _stage3DProxy.width  = viewPort.width;
+            _stage3DProxy.height = viewPort.height;
+
+            _starlingFront.stage.stageWidth  = STARLING_COORDINATE_WIDTH;
+            _starlingFront.stage.stageHeight = STARLING_COORDINATE_HEIGHT;
+
+            _starlingBack .stage.stageWidth  = STARLING_COORDINATE_WIDTH;
+            _starlingBack .stage.stageHeight = STARLING_COORDINATE_HEIGHT;
+        }
+
+        private function _getBestFitViewPort():Rectangle {
+            const aspectRatio:Number = 2 / 3;  // height / width
+            var screenWidth:Number   = stage.stageWidth;
+            var screenHeight:Number  = stage.stageHeight;
+            var viewPort:Rectangle   = new Rectangle();
+
+            if (screenHeight / screenWidth < aspectRatio) {
+                viewPort.height = screenHeight;
+                viewPort.width  = int(screenHeight / aspectRatio);
+                viewPort.x      = int((screenWidth - viewPort.width) / 2);  // centering horizontally
+            } else {
+                viewPort.width  = screenWidth;
+                viewPort.height = int(screenWidth * aspectRatio);
+                viewPort.y      = int((screenHeight - viewPort.height) / 2);  // centering vertically
+            }
+            return viewPort;
         }
 
         private function _initAway3DView(stage3DProxy:Stage3DProxy):View3D {
@@ -124,14 +168,14 @@ package {
                 stage3DProxy.viewPort,
                 stage3DProxy.stage3D
             );
-            _starlingFront.showStatsAt(HAlign.RIGHT, VAlign.TOP);
+            _starlingFront.showStatsAt(HAlign.RIGHT, VAlign.BOTTOM);
 
             _starlingBack = new Starling(
                 StarlingBackView, stage,
                 stage3DProxy.viewPort,
                 stage3DProxy.stage3D
             );
-            _starlingBack.showStatsAt(HAlign.RIGHT, VAlign.BOTTOM);
+            _starlingBack.showStatsAt(HAlign.RIGHT, VAlign.TOP);
         }
 
         private function _initCubes(view3D:View3D, lightPicker:StaticLightPicker):void {
