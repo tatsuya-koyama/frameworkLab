@@ -37,6 +37,8 @@ package {
     import starling.utils.HAlign;
     import starling.utils.VAlign;
 
+    import tart.Engine;
+
     [SWF(backgroundColor="#222222", frameRate="60", width="960", height="640")]
 
     public class Main extends Sprite {
@@ -54,6 +56,7 @@ package {
         private var _starlingBack:Starling;
         private var _light:DirectionalLight;
         private var _lightPicker:StaticLightPicker;
+        private var _engine:Engine;
 
         public function Main() {
             stage.scaleMode = StageScaleMode.NO_SCALE;
@@ -79,9 +82,16 @@ package {
 
             _initStarling(_stage3DProxy);
 
+            _initEngine();
+
             _stage3DProxy.addEventListener(Event.ENTER_FRAME, _onEnterFrame);
             stage.addEventListener(Event.RESIZE, _onStageResize);
             _onStageResize();
+        }
+
+        private function _initEngine():void {
+            _engine = new Engine();
+            _engine.test();
         }
 
         private function _onStageResize(event:Event=null):void {

@@ -3,7 +3,8 @@
 
 ## 2015-09-06 メモ
 
-- [考えごとをある程度まとめたノート](http://docs.tatsuya-koyama.com/dev-log/entity-component/)
+- [考えごとをある程度まとめたノート](http://docs.tatsuya-koyama.com/dev-log/entity-component/
+)
 
 ### ECS
 
@@ -57,6 +58,7 @@
 - ツール群
     - 階層型 FSM
     - 非同期処理ライブラリ
+    - ローカライズ
 - デバッグコンソール
 
 ### どう書きたいのか
@@ -148,4 +150,96 @@ ___
     }
 
 うーむ……
+
+## 2015-09-09 思考メモ
+
+### 参考：Unity のシーケンス
+
+- Editor Reset
+- Initialization
+    - Awake
+    - OnEnable
+    - Start
+- Physics
+    - FixedUpdate
+    - (Internal physics update)
+    - OnTriggerXXX
+    - OnCollisionXXX
+- Input events
+    - OnMouseXXX
+- Game logic
+    - Update
+    - Resume coroutine
+    - (Internal animation update)
+    - LateUpdate
+- Scene rendering
+    - OnWillRenderObject
+    - OnPreCull
+    - OnBecameVisible
+    - OnBecameInvisible
+    - OnPreRender
+    - OnRenderObject
+    - OnPostRender
+    - OnRenderImage
+- Gizmo rendering
+- GUI rendering
+- End of frame
+- OnApplicationPause
+- OnDisable
+- Decommissioning
+    - OnDestroy
+    - OnApplicationQuit
+
+### どう動く
+
+- PlayerEntity
+    - PlayerLogic, Position, View2D, ...
+- EnemyEntity
+    - EnemyLogic, ...
+- BulletEntity
+    - BulletLogic, ...
+
+___
+
+- ActorSystem
+    - IActorComponent を扱うものとする
+- PlayerLogic / EnemyLogic / BulletLogic
+    - → IActorComponent を実装している
+    - attach すると、なんらかの力で IActorComponent の List に登録される
+    - ActorSystem はその List をイテレートする
+
+
+    public interface IActorComponent {
+        function awake():void;
+        function start():void;
+        function update(deltaTime:Number):void;
+        function lateUpdate(deltaTime:Number):void;
+    }
+
+    // そうか、複数の System が同じ Component を操作してもいいのか
+    public class InitializeSystem implements ISystem {
+        public function process(deltaTime:Number):void {
+            for each (var actor:IActorComponent in _actorComponents) {
+                actor.awake();
+            }
+            for each (var actor:IActorComponent in _actorComponents) {
+                actor.start();
+            }
+        }
+    }
+
+    public class ActorSystem implements ISystem {
+        public function process(deltaTime:Number):void {
+            for each (var actor:IActorComponent in _actorComponents) {
+                actor.update();
+            }
+            for each (var actor:IActorComponent in _actorComponents) {
+                actor.lateUpdate();
+            }
+        }
+    }
+
+    // あと Messaging System とか…
+
+
 
