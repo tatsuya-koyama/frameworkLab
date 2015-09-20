@@ -1,16 +1,20 @@
-package tart {
+package {
 
-    public class Engine {
+    import tart.utils.IIterator;
+    import tart.utils.LinkedList;
+    import tart.utils.LinkedListNode;
+
+    public class MiscTester {
 
         private var _list:LinkedList;
         private var _listIter:IIterator;
 
-        public function Engine() {
+        public function MiscTester() {
             _list     = new LinkedList();
             _listIter = _list.iterator();  // cache iterator to avoid new cost
         }
 
-        public function test():void {
+        public function testList():void {
             _list.push(3);
             _list.push(1);
             _list.push(4);
@@ -35,5 +39,6 @@ package tart {
                 trace("item:", item);
             }
         }
+
     }
 }

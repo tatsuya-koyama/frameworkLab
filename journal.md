@@ -208,6 +208,7 @@ ___
     - attach すると、なんらかの力で IActorComponent の List に登録される
     - ActorSystem はその List をイテレートする
 
+___
 
     public interface IActorComponent {
         function awake():void;
@@ -240,6 +241,55 @@ ___
     }
 
     // あと Messaging System とか…
+
+複数の Component をいじる System はどうなる？
+
+    public class View2DSystem implements ISystem {
+        public function process(deltaTime:Number):void {
+            for each (var view2d:View2DComponent in _view2dComponents) {
+                var displayObj:DisplayObject = view2d.displayObj;
+
+                // View2D が attach されてる Entity から
+                // TransformComponent を取得しちゃう感じ？
+                var transform:TransformComponent = view2d.getComponent(TransformComponent);
+                if (!transform) { /* 困る */ }
+
+                displayObj.x = transform.x;
+                displayObj.y = transform.y;
+                ...
+            }
+        }
+    }
+
+でも Sprite の親子関係とか誰がどう作ってどう操作するんだ
+
+    public class TurtleActor implements IActorComponent {
+
+        public static function create():Entity {
+            var entity:Entity = EntityPool.getNewEntity();
+            entity.attachComponents(
+                TurtleActor, Transform, View2D  // ここだけ書きたい感はある
+            );
+            return entity;
+        }
+
+        public static function create2():Entity {
+            // ヘルパークラスでも作るか  中で Pooling とかやってくれる
+            return EntityBuilder.create(
+                TurtleActor, Transform, View2D
+            );
+        }
+
+        public function awake():void {
+            // addEntity できる説？
+            _childEntity = EntityBuilder.create(Transform, View2D);
+            addEntity(childEntity);
+        }
+
+        public function update(deltaTime:Number):void {
+            _childEntity.get(Transform).rotation += 0.1 * deltaTime;
+        }
+    }
 
 
 
