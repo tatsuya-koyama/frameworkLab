@@ -254,19 +254,29 @@ ___
                 var transform:TransformComponent = view2d.getComponent(TransformComponent);
                 if (!transform) { /* 困る */ }
 
+                // 毎フレームこれやるのって微妙だよなぁ
                 displayObj.x = transform.x;
                 displayObj.y = transform.y;
                 ...
+
+                // せめて
+                if (transform.hasChanged()) {
+                    ...
+                }
             }
         }
     }
 
 でも Sprite の親子関係とか誰がどう作ってどう操作するんだ
 
+結局 Actor が操作するとかしないと、状況に応じて色々見た目の変化させたりするの大変
+
     public class TurtleActor implements IActorComponent {
 
         public static function create():Entity {
             var entity:Entity = EntityPool.getNewEntity();
+            // この時点で component の初期化をするのは書くのが煩雑になるで嫌。
+            // component のクラスだけ指定する感じでやりたい
             entity.attachComponents(
                 TurtleActor, Transform, View2D  // ここだけ書きたい感はある
             );
@@ -284,12 +294,48 @@ ___
             // addEntity できる説？
             _childEntity = EntityBuilder.create(Transform, View2D);
             addEntity(childEntity);
+
+            // 結局こういうことやるの？ 微妙すぎる
+            var displayObj:DisplayObject = (get(View2D) as View2D).displayObj;
+            var image:Image = ResouceManager.getImage('resource_name');
+            displayObj.addChild(image);
+
+            // せめて View2D 側にメソッド持たせるか（ラッパーみたいになってめんどいけど）
+            // あと Actor のベースクラスでよく使うコンポーネントの参照は持っちゃう
+            view2d.layer = Layers.FRONT;
+            view2d.addImage('resource_name');
         }
 
         public function update(deltaTime:Number):void {
             _childEntity.get(Transform).rotation += 0.1 * deltaTime;
         }
     }
+
+## イベントハンドラの命名
+
+- GitHub でコード検索してみる
+- その 1
+    - onClick           → 3100 万件 Hit
+    - onClicked         → 17 万
+    - onButtonClick     → 10 万
+    - onButtonClicked   → 2.4 万
+    - onClickButton     → 2 万
+- その 2
+    - onContextCreated  → 1 万
+    - onContextCreate   → 544
+    - onContextCreation → 11
+    - onCreateContext   → 5458
+    - onCreatedContext  → 2
+- その 3
+    - onLoad            → 2870 万
+    - onLoaded          → 16 万
+    - onLoadComplete    → 7.3 万
+    - onLoadCompleted   → 5487
+    - onCompleteLoad    → 107
+    - onCompletedLoad   → 0
+    - onLoadDone        → 1.5 万
+- on + 名詞が普通かな
+- もしくは on + 目的語 + 動詞の過去形？
 
 
 

@@ -38,6 +38,11 @@ package {
                 var item:int = _listIter.next();
                 trace("item:", item);
             }
+
+            trace("\n----- loop 4 -----");
+            for (var item2:int = _listIter.head(); item2; item2 = _listIter.next()) {
+                trace("item:", item2);
+            }
         }
 
     }

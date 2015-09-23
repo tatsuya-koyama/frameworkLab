@@ -17,6 +17,14 @@ package tart.utils {
             _nextNode    = _list.head;
         }
 
+        public function head():* {
+            _currentNode = _list.head;
+            if (_currentNode) {
+                _nextNode = _currentNode.next;
+            }
+            return current();
+        }
+
         public function current():* {
             if (!_currentNode) { return null; }
             return _currentNode.item;

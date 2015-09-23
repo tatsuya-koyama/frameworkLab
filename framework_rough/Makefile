@@ -8,8 +8,7 @@ debug:
 	      ./Main.as
 
 run:
-#	adl app.xml build/ -screensize 640x960:640x960
-	adl app.xml build/ -screensize 64x96:64x96
+	adl app.xml build/ -screensize 640x960:640x960
 
 go:
 	rm -f build/Main.swf

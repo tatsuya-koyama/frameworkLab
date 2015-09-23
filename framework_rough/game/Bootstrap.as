@@ -4,8 +4,10 @@ package game {
 
     public class Bootstrap {
 
-        public function Bootstrap() {
+        private var _engine:Engine;
 
+        public function Bootstrap() {
+            _engine = new Engine();
         }
 
         public function run():void {
