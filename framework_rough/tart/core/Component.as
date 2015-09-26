@@ -2,7 +2,8 @@ package tart.core {
 
     public class Component {
 
-        public var entity:Entity;
+        protected var _entity:Entity;
+        protected var _tartContext:TartContext;
 
         public function getClass():Class {
             throw new Error("You should override getClass() in subclasses.");
@@ -13,11 +14,19 @@ package tart.core {
 
         }
 
+        public function onAddedToEngine(tartContext:TartContext):void {
+            _tartContext = tartContext;
+        }
+
+        public function onAttachedToEntity(entity:Entity):void {
+            _entity = entity;
+        }
+
         public function getComponent(componentClass:Class):Component {
-            if (!entity) {
+            if (!_entity) {
                 throw new Error("No entity.");
             }
-            return entity.getComponent(componentClass);
+            return _entity.getComponent(componentClass);
         }
 
     }

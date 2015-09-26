@@ -7,6 +7,7 @@ package tart.core {
     import flash.events.Event;
     import flash.geom.Rectangle;
     import flash.utils.Dictionary;
+    import flash.utils.setTimeout; /// ToDo: 不本意
 
     import away3d.containers.View3D;
     import away3d.core.managers.Stage3DManager;
@@ -41,11 +42,13 @@ package tart.core {
         private var _starlingBack:Starling;
         private var _onInitComplete:Function;
 
+        private var _tartContext:TartContext;
         private var _systems:LinkedList;
         private var _systemIter:IIterator;
         private var _componentMap:Dictionary;
 
         public function Engine() {
+            _tartContext  = new TartContext();
             _systems      = new LinkedList();
             _systemIter   = _systems.iterator();
             _componentMap = new Dictionary();
@@ -87,11 +90,16 @@ package tart.core {
             _stage.addEventListener(Event.RESIZE, _onStageResize);
             _onStageResize();
 
+            _initTartContext();
             _initSystems();
             _stage3DProxy.addEventListener(Event.ENTER_FRAME, _onEnterFrame);
 
             if (_onInitComplete != null) {
-                _onInitComplete(this);
+                // ToDo: ちゃんとやるには Starling の ROOT_CREATED イベントを待たなければならない
+                var that:Engine = this;
+                setTimeout(function():void {
+                    _onInitComplete(that);
+                }, 1);
             }
         }
 
@@ -171,9 +179,16 @@ package tart.core {
         public function addEntity(entity:Entity):void {
             var components:Array = entity.components;
             for each (var component:Component in components) {
+                component.onAddedToEngine(_tartContext);
                 var cmptClass:Class = component.getClass();
                 _getComponentsSafe(cmptClass).push(component);
             }
+        }
+
+        private function _initTartContext():void {
+            _tartContext.starlingBack  = _starlingBack;
+            _tartContext.view3D        = _view3D;
+            _tartContext.starlingFront = _starlingFront;
         }
 
         // 無ければ作る
@@ -196,7 +211,7 @@ package tart.core {
 
         public function mainLoop():void {
             for (var system:System = _systemIter.head(); system; system = _systemIter.next()) {
-                system.process();
+                system.process(_tartContext);
             }
         }
 

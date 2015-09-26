@@ -337,5 +337,33 @@ ___
 - on + 名詞が普通かな
 - もしくは on + 目的語 + 動詞の過去形？
 
+## ECS でシーングラフをどう扱うのかという問題
+
+- 太陽と地球と月、のように Transform を重ねる親子関係を持つものはよく出てくる
+- そもそも 2D View に Starling 使おうとすると
+  DisplayObject が 1 個 1 個 Transform を持っちゃってるわけだし
+- ECS でシーングラフをそのまま扱おうとしているのが間違いなのか？
+- いや各 Node が 1 つの Entity であればよいだけか？
+- ParentEntity とか AttachmentPoint とか Target という Component を持つ説
+
+### 参考リンク
+
+- [bitsquid: development blog: Building a Data-Oriented Entity System (Part 3: The Transform Component)](http://bitsquid.blogspot.jp/2014/10/building-data-oriented-entity-system.html)
+    - Scene graph の transform の計算順序などについての考察
+- [Scene Graphs &amp; Component Based Game Engines](http://www.slideshare.net/skooter500/fermented-poly)
+    - これは Component が子の Component を持てる構造
+- [Managing game object hierarchy in an entity component system | IceFall Games](https://mtnphil.wordpress.com/2014/06/09/managing-game-object-hierarchy-in-an-entity-component-system/)
+    - ECS における Transform の計算の実装方法についての考察
+- [Parsec Patrol Diaries: Entity Component Systems - blog.lmorchard.com](http://blog.lmorchard.com/2013/11/27/entity-component-system/)
+    - シーングラフの話じゃないけど図がよい
+- [Entity Component System and Parent Relations - Game Programming - GameDev.net](http://www.gamedev.net/topic/654122-entity-component-system-and-parent-relations/#entry5136703)
+    - Transformation Component の詳細は、Transformation System の内部に隠すべきだという考え
+    - 親子関係の表現を Entity でやるべきではない
+        - Component が Target Entity を持つべきってことかな？
+    - ヴァンパイアの Bob Entity が Fred Entity を噛むと、Fred は Bob の Vampire Component の子になる
+    - Fred が Car Entity に乗ると、Car の Transform Component の子になる
+
+
+
 
 

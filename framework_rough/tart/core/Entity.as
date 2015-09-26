@@ -26,7 +26,7 @@ package tart.core {
             _componentMap[cmptClass] = component;
             _componentList.push(component);
 
-            component.entity = this;
+            component.onAttachedToEntity(this);
         }
 
     }

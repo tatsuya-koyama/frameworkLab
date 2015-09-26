@@ -6,6 +6,8 @@ package {
     import tart.core.Engine;
     import tart.core.Entity;
     import tart.systems.ActorAwakenSystem;
+    import tart.systems.ActorUpdateSystem;
+    import tart.systems.RenderSystem;
 
     import game.entities.Piyo;
 
@@ -15,7 +17,9 @@ package {
         public function Main() {
             var engine:Engine = new Engine();
             engine.addSystems([
-                new ActorAwakenSystem()
+                 new ActorAwakenSystem()
+                ,new ActorUpdateSystem()
+                ,new RenderSystem()
             ]);
             engine.boot(this, _onInitComplete);
 

@@ -29,7 +29,7 @@ package tart.core {
 
         }
 
-        public function process():void {
+        public function process(tartContext:TartContext):void {
 
         }
 

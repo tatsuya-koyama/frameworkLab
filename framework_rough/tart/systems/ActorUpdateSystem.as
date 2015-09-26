@@ -6,7 +6,7 @@ package tart.systems {
     import tart.utils.IIterator;
     import tart.utils.LinkedList;
 
-    public class ActorAwakenSystem extends System{
+    public class ActorUpdateSystem extends System{
 
         private var _components:LinkedList;
         private var _componentIter:IIterator;
@@ -18,11 +18,7 @@ package tart.systems {
 
         public override function process(tartContext:TartContext):void {
             for (var actor:Actor = _componentIter.head(); actor; actor = _componentIter.next()) {
-                if (actor.isAwoken) { continue; }
-
-                actor.internalAwake();
-                actor.awake();
-                actor.isAwoken = true;
+                actor.update(1/60);  // ToDo: pass delta time
             }
         }
 
