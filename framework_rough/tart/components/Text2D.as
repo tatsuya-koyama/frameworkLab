@@ -4,12 +4,9 @@ package tart.components {
     import starling.display.DisplayObjectContainer;
     import starling.text.TextField;
 
-    import tart.components.Transform;
-    import tart.core.Component;
+    public class Text2D extends View2D {
 
-    public class Text2D extends Component implements IView2D {
-
-        private var _text:TextField;
+        private var _textField:TextField;
 
         public override function getClass():Class {
             return Text2D;
@@ -19,23 +16,28 @@ package tart.components {
 
         }
 
-        public function get display():DisplayObject {
-            return _text;
+        public override function get display():DisplayObject {
+            return _textField;
         }
 
-        public function get transform():Transform {
-            return getComponent(Transform) as Transform;
-        }
-
-        public function get text():TextField {
-            return _text;
+        public function get textField():TextField {
+            return _textField;
         }
 
         public function init(parent:DisplayObjectContainer,
-                             width:Number, height:Number, text:String):void
+                             text:String, width:Number, height:Number,
+                             offsetX:Number=0, offsetY:Number=0,
+                             anchorX:Number=0.5, anchorY:Number=0.5):void
         {
-            _text = new TextField(width, height, text);
-            parent.addChild(_text);
+            _textField = _makeTextField(
+                text, width, height, offsetX, offsetY, anchorX, anchorY
+            );
+            this.offsetX = offsetX;
+            this.offsetY = offsetY;
+            this.anchorX = anchorX;
+            this.anchorY = anchorY;
+
+            parent.addChild(_textField);
         }
 
     }

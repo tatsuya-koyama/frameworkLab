@@ -179,8 +179,12 @@ package tart.core {
         public function addEntity(entity:Entity):void {
             var components:Array = entity.components;
             for each (var component:Component in components) {
-                component.onAddedToEngine(_tartContext);
                 var cmptClass:Class = component.getClass();
+                if (!cmptClass) {
+                    throw new Error("Cannot attach abstract component: " + component);
+                }
+
+                component.onAddedToEngine(_tartContext);
                 _getComponentsSafe(cmptClass).push(component);
             }
         }

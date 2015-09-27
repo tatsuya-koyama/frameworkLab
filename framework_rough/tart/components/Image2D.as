@@ -5,10 +5,7 @@ package tart.components {
     import starling.display.Image;
     import starling.textures.Texture;
 
-    import tart.components.Transform;
-    import tart.core.Component;
-
-    public class Image2D extends Component implements IView2D {
+    public class Image2D extends View2D {
 
         private var _image:Image;
 
@@ -20,20 +17,27 @@ package tart.components {
 
         }
 
-        public function get display():DisplayObject {
+        public override function get display():DisplayObject {
             return _image;
-        }
-
-        public function get transform():Transform {
-            return getComponent(Transform) as Transform;
         }
 
         public function get image():Image {
             return _image;
         }
 
-        public function init(parent:DisplayObjectContainer, texture:Texture):void {
-            _image = new Image(texture);
+        public function init(parent:DisplayObjectContainer, texture:Texture,
+                             width:Number=NaN, height:Number=NaN,
+                             offsetX:Number=0, offsetY:Number=0,
+                             anchorX:Number=0.5, anchorY:Number=0.5):void
+        {
+            _image = _makeImage(
+                texture, width, height, offsetX, offsetY, anchorX, anchorY
+            );
+            this.offsetX = offsetX;
+            this.offsetY = offsetY;
+            this.anchorX = anchorX;
+            this.anchorY = anchorY;
+
             parent.addChild(_image);
         }
 

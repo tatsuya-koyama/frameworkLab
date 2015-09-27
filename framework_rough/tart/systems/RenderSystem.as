@@ -1,10 +1,12 @@
 package tart.systems {
 
+    import starling.display.DisplayObject;
+
     import tart.components.Image2D;
-    import tart.components.IView2D;
     import tart.components.Sprite2D;
     import tart.components.Text2D;
     import tart.components.Transform;
+    import tart.components.View2D;
     import tart.core.System;
     import tart.core.TartContext;
     import tart.utils.IIterator;
@@ -39,12 +41,17 @@ package tart.systems {
             tartContext.starlingFront.nextFrame();
         }
 
-        private function _applyTransform2D(view2D:IView2D):void {
+        private function _applyTransform2D(view2D:View2D):void {
             var transform:Transform = view2D.transform;
             if (!transform) { return; }
 
-            view2D.display.x = transform.position.x;
-            view2D.display.y = transform.position.y;
+            view2D.display.x = view2D.offsetX + transform.position.x;
+            view2D.display.y = view2D.offsetY + transform.position.y;
+
+            view2D.display.rotation = transform.rotation.z;
+
+            view2D.display.scaleX = transform.scale.x;
+            view2D.display.scaleY = transform.scale.y;
         }
 
     }

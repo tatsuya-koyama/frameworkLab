@@ -15,9 +15,9 @@ package tart.components {
         }
 
         public function Transform() {
-            position = new Vector3D();
-            rotation = new Vector3D();
-            scale    = new Vector3D();
+            position = new Vector3D(0, 0, 0);
+            rotation = new Vector3D(0, 0, 0);
+            scale    = new Vector3D(1, 1, 1);
         }
 
     }

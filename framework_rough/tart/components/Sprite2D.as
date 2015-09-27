@@ -2,12 +2,11 @@ package tart.components {
 
     import starling.display.DisplayObject;
     import starling.display.DisplayObjectContainer;
+    import starling.display.Image;
     import starling.display.Sprite;
+    import starling.textures.Texture;
 
-    import tart.components.Transform;
-    import tart.core.Component;
-
-    public class Sprite2D extends Component implements IView2D {
+    public class Sprite2D extends View2D {
 
         private var _sprite:Sprite;
 
@@ -19,12 +18,8 @@ package tart.components {
 
         }
 
-        public function get display():DisplayObject {
+        public override function get display():DisplayObject {
             return _sprite;
-        }
-
-        public function get transform():Transform {
-            return getComponent(Transform) as Transform;
         }
 
         public function get sprite():Sprite {
@@ -34,6 +29,22 @@ package tart.components {
         public function init(parent:DisplayObjectContainer):void {
             _sprite = new Sprite();
             parent.addChild(_sprite);
+        }
+
+        public function addImage(texture:Texture,
+                                 width:Number=NaN, height:Number=NaN,
+                                 offsetX:Number=0, offsetY:Number=0,
+                                 anchorX:Number=0.5, anchorY:Number=0.5):Image
+        {
+            if (!_sprite) {
+                throw new Error("Sprite not initialized.");
+            }
+
+            var image:Image = _makeImage(
+                texture, width, height, offsetX, offsetY, anchorX, anchorY
+            );
+            _sprite.addChild(image);
+            return image;
         }
 
     }
