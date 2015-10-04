@@ -29,7 +29,7 @@ package tart.components {
             isAwoken = false;
         }
 
-        public function internalAwake():void {
+        public override function internalAwake():void {
             _transform = getComponent(Transform) as Transform;
             _sprite2D  = getComponent(Sprite2D)  as Sprite2D;
             _image2D   = getComponent(Image2D)   as Image2D;

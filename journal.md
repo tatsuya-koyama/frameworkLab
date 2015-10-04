@@ -364,6 +364,59 @@ ___
     - Fred が Car Entity に乗ると、Car の Transform Component の子になる
 
 
+## 処理の流れを整理
+
+### System の準備と、Engine の起動（@ Main）
+
+    engine.addSystems([
+         new ActorAwakenSystem()
+        ,new ActorUpdateSystem()
+        ,new RenderSystem()
+        , ...
+    ]);
+    engine.boot(this, _onInitComplete);
+
+- System は、addSystems() 時に onAddedToEngine() が呼ばれる
+
+### 最初にいるべき Entity を置く（@ Scene）
+
+    var entity:Entity = new Entity();
+    entity.attachComponent(new PiyoActor());
+    entity.attachComponent(new Transform());
+    ...
+
+    engine.addEntity(entity);
+
+- Component は、
+    - Entity.attachComponent() 時に onAttachedToEntity() が呼ばれる
+    - Engine.addEntity() 時に onCreateEntity() が呼ばれる
+        - その際、Component.internalAwake() が呼ばれる
+        - （Actor が内部的に便利アクセスのための参照をセットしたりする）
+- Entity は、Engine.addEnity() 時に onCreate() が呼ばれる
+
+### メインループ
+
+- System を順にイテレートし、system.process() を呼ぶ
+    - Actor の awake()
+    - Actor の update()
+    - レンダリング： Transform を View にコピー後、Starling, Away3D の描画関数を呼ぶ
+    - ループ中に生み出された Entity を Engine に足す？
+
+## もういっそ可愛い命名にしちゃうパターン
+
+    static function create(x:Number, y:Number) {
+        // Tart == Entity
+        // topping() == attachComponent()
+        var tart:Tart = TartPool.get();
+        tart.topping(PiyoActor, Transform, Image2D);
+        tart.bake();  // この処理で以下の参照を可能にする
+
+        var actor:Actor = tart.get(PiyoActor);
+        actor.transform.x = x;
+        actor.transform.y = y;
+
+        return tart;
+    }
 
 
 

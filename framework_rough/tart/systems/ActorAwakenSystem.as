@@ -20,7 +20,6 @@ package tart.systems {
             for (var actor:Actor = _componentIter.head(); actor; actor = _componentIter.next()) {
                 if (actor.isAwoken) { continue; }
 
-                actor.internalAwake();
                 actor.awake();
                 actor.isAwoken = true;
             }

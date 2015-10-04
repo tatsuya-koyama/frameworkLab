@@ -46,12 +46,16 @@ package tart.core {
         private var _systems:LinkedList;
         private var _systemIter:IIterator;
         private var _componentMap:Dictionary;
+        private var _futureEntities:LinkedList;
+        private var _futureEntityIter:IIterator;
 
         public function Engine() {
-            _tartContext  = new TartContext();
-            _systems      = new LinkedList();
-            _systemIter   = _systems.iterator();
-            _componentMap = new Dictionary();
+            _tartContext      = new TartContext();
+            _systems          = new LinkedList();
+            _systemIter       = _systems.iterator();
+            _componentMap     = new Dictionary();
+            _futureEntities   = new LinkedList();
+            _futureEntityIter = _futureEntities.iterator();
         }
 
         // ToDo: 初期化する専用のクラスを作ってもろもろ差し替え可能にする
@@ -177,14 +181,45 @@ package tart.core {
         }
 
         public function addEntity(entity:Entity):void {
-            var components:Array = entity.components;
-            for each (var component:Component in components) {
+            _validateComponents(entity);
+            _initComponents(entity);
+            _registerComponents(entity);
+            entity.onCreate(this);
+        }
+
+        // Entity を作るが、mainLoop の最後のほうまで Engine の制御下には置かない
+        public function createEntity(entity:Entity):void {
+            _validateComponents(entity);
+            _initComponents(entity);
+            entity.onCreate(this);
+            _futureEntities.push(entity);
+        }
+
+        public function _addCreatedEntities():void {
+            for (var entity:Entity = _futureEntityIter.head(); entity; entity = _futureEntityIter.next()) {
+                _registerComponents(entity);
+            }
+            _futureEntities.removeAll();
+        }
+
+        private function _validateComponents(entity:Entity):void {
+            for each (var component:Component in entity.components) {
                 var cmptClass:Class = component.getClass();
                 if (!cmptClass) {
                     throw new Error("Cannot attach abstract component: " + component);
                 }
+            }
+        }
 
-                component.onAddedToEngine(_tartContext);
+        private function _initComponents(entity:Entity):void {
+            for each (var component:Component in entity.components) {
+                component.onCreateEntity(_tartContext);
+            }
+        }
+
+        private function _registerComponents(entity:Entity):void {
+            for each (var component:Component in entity.components) {
+                var cmptClass:Class = component.getClass();
                 _getComponentsSafe(cmptClass).push(component);
             }
         }
@@ -217,6 +252,8 @@ package tart.core {
             for (var system:System = _systemIter.head(); system; system = _systemIter.next()) {
                 system.process(_tartContext);
             }
+
+            _addCreatedEntities();
         }
 
     }

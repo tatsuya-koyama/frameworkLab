@@ -4,6 +4,8 @@ package tart.core {
 
     public class Entity {
 
+        protected var _engine:Engine;
+
         private var _componentMap:Dictionary;
         private var _componentList:Array;
 
@@ -14,6 +16,10 @@ package tart.core {
 
         public function get components():Array {
             return _componentList;
+        }
+
+        public function onCreate(engine:Engine):void {
+            _engine = engine;
         }
 
         public function getComponent(componentClass:Class):Component {
@@ -27,6 +33,10 @@ package tart.core {
             _componentList.push(component);
 
             component.onAttachedToEntity(this);
+        }
+
+        public function createEntity(entity:Entity):void {
+            _engine.createEntity(entity);
         }
 
     }

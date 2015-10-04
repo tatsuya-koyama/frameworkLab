@@ -14,8 +14,13 @@ package tart.core {
 
         }
 
-        public function onAddedToEngine(tartContext:TartContext):void {
+        public function internalAwake():void {
+
+        }
+
+        public function onCreateEntity(tartContext:TartContext):void {
             _tartContext = tartContext;
+            internalAwake();
         }
 
         public function onAttachedToEntity(entity:Entity):void {
@@ -27,6 +32,13 @@ package tart.core {
                 throw new Error("No entity.");
             }
             return _entity.getComponent(componentClass);
+        }
+
+        public function createEntity(entity:Entity):void {
+            if (!_entity) {
+                throw new Error("No entity.");
+            }
+            _entity.createEntity(entity);
         }
 
     }

@@ -24,6 +24,13 @@ package tart.utils {
             return _size;
         }
 
+        public function removeAll():void {
+            // ToDo: ちゃんと参照切る？
+            _head = null;
+            _tail = null;
+            _size = 0;
+        }
+
         // add to tail
         // ToDo: priority option
         public function push(item:*):void {
